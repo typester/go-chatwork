@@ -298,16 +298,23 @@ func (cw *Chatwork) GetUpdate() ([]*Chat, error) {
 				}
 
 				pid := strconv.Itoa(int(chat.Aid))
-				person, okp := cw.people[pid]
+				_, okp := cw.people[pid]
 				if !okp {
+					new_persons, err := cw.GetAccountInfo(chat.Aid)
+					if err != nil {
+						return nil, err
+					}
 
+					for i := range new_persons {
+						cw.people[pid] = new_persons[i]
+					}
 				}
 
 				u := &Chat{
 					Id:      chat.Id,
 					Message: chat.Msg,
 					Room:    cw.rooms[id],
-					Person:  person,
+					Person:  cw.people[pid],
 					Time:    time.Unix(chat.Tm, 0),
 				}
 				updates = append(updates, u)
@@ -324,4 +331,36 @@ func (cw *Chatwork) GetUpdate() ([]*Chat, error) {
 	}
 
 	return updates, nil
+}
+
+func (cw *Chatwork) GetAccountInfo(ids ...int64) ([]*Person, error) {
+	type AccountParam struct {
+		Aid []int64 `json:"aid"`
+	}
+
+	type AccountInfo struct {
+		AccountDat map[string]Person `json:"account_dat"`
+	}
+
+	type AccountInfoResponse struct {
+		CommonResponse
+		Result AccountInfo `json:"result"`
+	}
+
+	var res AccountInfoResponse
+	err := cw.post("get_account_info", &AccountParam{ids}, &res)
+
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]*Person, len(res.Result.AccountDat))
+	i := 0
+	for _, p := range res.Result.AccountDat {
+		results[i] = new(Person)
+		*(results[i]) = p
+		i++
+	}
+
+	return results, nil
 }
