@@ -193,7 +193,7 @@ func Handle(conn net.Conn) {
 
 		case "PING":
 			server := msg.Args[0]
-			fmt.Fprintf(conn, ":%s PONG %s :%s", server, server, server)
+			fmt.Fprintf(conn, ":%s PONG %s :%s\n", server, server, server)
 
 		case "QUIT":
 			return
