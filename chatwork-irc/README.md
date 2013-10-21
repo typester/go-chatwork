@@ -11,7 +11,7 @@ go get -u github.com/typester/go-chatwork/chatwork-irc
 ## Run
 
 ```
-chatwork-irc --addr=127.0.0.1:6667
+chatwork-irc -addr="127.0.0.1:6667"
 ```
 
 ## Connect From an IRC Client
