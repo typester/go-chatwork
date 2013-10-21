@@ -191,6 +191,13 @@ func Handle(conn net.Conn) {
 
 			}()
 
+		case "PING":
+			server := msg.Args[0]
+			fmt.Fprintf(conn, ":%s PONG %s :%s", server, server, server)
+
+		case "QUIT":
+			return
+
 		default:
 			log.Printf("unknown cmd: %s\n", msg.Command)
 		}
