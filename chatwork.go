@@ -39,6 +39,7 @@ type Room struct {
 	ReadNum    int64            `json:"r"`
 	ChatNum    int64            `json:"c"`
 	Member     map[string]int64 `json:"m"`
+	receivedId int64
 }
 
 type Chat struct {
@@ -284,11 +285,12 @@ func (cw *Chatwork) GetUpdate() ([]*Chat, error) {
 		info, ok := roomInfo.Result.Rooms[id]
 		if ok {
 			var lastUpdate int64 = 0
+			var received int64 = 0
 
 			for i := range info.Chats {
 				chat := info.Chats[i]
 
-				if chat.Tm < room.LastUpdate {
+				if chat.Id <= room.receivedId || chat.Tm < room.LastUpdate {
 					continue
 				}
 
@@ -322,10 +324,16 @@ func (cw *Chatwork) GetUpdate() ([]*Chat, error) {
 				if chat.Tm > lastUpdate {
 					lastUpdate = chat.Tm
 				}
+				if chat.Id > received {
+					received = chat.Id
+				}
 			}
 
 			if lastUpdate > room.LastUpdate {
 				room.LastUpdate = lastUpdate
+			}
+			if received > room.receivedId {
+				room.receivedId = received
 			}
 		}
 	}

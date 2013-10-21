@@ -172,8 +172,6 @@ func Handle(conn net.Conn) {
 
 			go func() {
 				for id, room := range client.Rooms() {
-					fmt.Printf("search room: %s, %s", fixch(room.Name), ch)
-
 					if fixch(room.Name) == ch {
 						rid, err := strconv.Atoi(id)
 						if err != nil {
