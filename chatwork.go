@@ -364,3 +364,24 @@ func (cw *Chatwork) GetAccountInfo(ids ...int64) ([]*Person, error) {
 
 	return results, nil
 }
+
+func (cw *Chatwork) SendChat(roomId int64, msg string) error {
+	type SendData struct {
+		RoomId     string      `json:"room_id"`
+		Text       string      `json:"text"`
+		LastChatId interface{} `json:"last_chat_id"`
+		Read       bool        `json:"read"`
+		EditId     interface{} `json:"edit_id"`
+	}
+
+	var res CommonResponse
+	err := cw.post("send_chat", &SendData{
+		RoomId:     strconv.Itoa(int(roomId)),
+		Text:       msg,
+		LastChatId: nil,
+		Read:       true,
+		EditId:     nil,
+	}, &res)
+
+	return err
+}
