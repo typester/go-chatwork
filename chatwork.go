@@ -306,7 +306,7 @@ func (cw *Chatwork) GetUpdate() ([]*Chat, error) {
 				u := &Chat{
 					Id:      chat.Id,
 					Message: chat.Msg,
-					Room:    room,
+					Room:    cw.rooms[id],
 					Person:  person,
 					Time:    time.Unix(chat.Tm, 0),
 				}
